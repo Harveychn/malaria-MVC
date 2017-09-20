@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malaria.ssm.module.login.mapper.UserExpandMapper">
+    <!--<resultMap id="BaseResultMap" type="com.zxh.ssm.module.whole.pojo.User">-->
+        <!--<id column="userEmail" property="useremail" jdbcType="VARCHAR"/>-->
+        <!--<result column="userName" property="username" jdbcType="CHAR"/>-->
+        <!--<result column="userPassword" property="userpassword" jdbcType="CHAR"/>-->
+        <!--<result column="userRealName" property="userrealname" jdbcType="CHAR"/>-->
+        <!--<result column="userPhone" property="userphone" jdbcType="CHAR"/>-->
+        <!--<result column="userUnit" property="userunit" jdbcType="CHAR"/>-->
+        <!--<result column="reviewStatus" property="reviewstatus" jdbcType="CHAR"/>-->
+        <!--<result column="perissionInformation" property="perissioninformation" jdbcType="CHAR"/>-->
+        <!--<result column="joinDate" property="joindate" jdbcType="TIMESTAMP"/>-->
+    <!--</resultMap>-->
+
+    <!--<sql id="Base_Column_List">-->
+        <!--userEmail, userName, userPassword, userRealName, userPhone, userUnit, reviewStatus,-->
+        <!--perissionInformation, joinDate-->
+    <!--</sql>-->
+
+    <!--<select id="selectByPrimaryKeyInUser" resultMap="BaseResultMap" parameterType="java.lang.String">-->
+        <!--select-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--from user-->
+        <!--where userEmail = #{useremail,jdbcType=VARCHAR}-->
+    <!--</select>-->
+
+    <!--<select id="selectCheckUser" resultMap="BaseResultMap" parameterType="java.lang.String">-->
+
+        <!--select-->
+        <!--useremail,username,userrealname,userphone,userunit,reviewstatus,perissioninformation,joindate-->
+        <!--from user WHERE reviewstatus='0'-->
+    <!--</select>-->
+
+
+
+    <!--<update id="updateCheckUser">-->
+        <!--UPDATE user SET reviewStatus='2',perissionInformation='2' WHERE userEmail=#{useremail,jdbcType=VARCHAR}-->
+    <!--</update>-->
+</mapper>

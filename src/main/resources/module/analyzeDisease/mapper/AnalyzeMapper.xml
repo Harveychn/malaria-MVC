@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.malaria.ssm.module.analyzeDisease.mapper.AnalyzeMapper">
+
+    <select id="selectDisease" resultType="String">
+        SELECT DISTINCT(diseaseName) FROM patient_cases_information
+	WHERE diseaseName NOT LIKE '%未分型%'
+    </select>
+
+    <resultMap id="analyzeBySexMap" type="com.malaria.ssm.module.analyzeDisease.pojo.SexAnalyzeRe">
+        <result column="dataYear" property="year"/>
+        <result column="disease" property="disease"/>
+        <result column="sex" property="sex"/>
+        <result column="num" property="patientNum"/>
+    </resultMap>
+
+    <select id="analyzeBySex" parameterType="String"
+            resultMap="analyzeBySexMap">
+        SELECT p.`year` AS dataYear,pci.diseaseName AS disease,p.sex AS sex,COUNT(p.sex) AS num FROM patient_information
+        p
+        JOIN patient_cases_information pci
+        ON (p.`year` = pci.`year` AND p.cardID = pci.cardID)
+        <where>
+            AND pci.diseaseName NOT LIKE '疟疾（未分型）'
+            <if test="'default'!=_parameter and ''!=_parameter">
+                AND p.address LIKE '%${_parameter}%'
+            </if>
+        </where>
+        GROUP BY p.sex , pci.diseaseName , pci.`year`
+        ORDER BY pci.`year`,pci.diseaseName,p.sex;
+    </select>
+
+
+    <resultMap id="analyzeByCareerMap" type="com.malaria.ssm.module.analyzeDisease.pojo.CareerAnalyzeRe">
+        <result column="year" property="year"/>
+        <result column="diseaseName" property="disease"/>
+        <result column="career" property="career"/>
+        <result column="patientNum" property="patientNum"/>
+    </resultMap>
+
+    <select id="analyzeByCareer" parameterType="String"
+            resultMap="analyzeByCareerMap">
+        SELECT p.`year` AS `year`,pci.diseaseName AS diseaseName,p.career AS career,COUNT(p.career) AS patientNum
+        FROM patient_information p JOIN patient_cases_information pci
+        ON p.`year` = pci.`year` AND p.cardID = pci.cardID
+        <where>
+            AND pci.diseaseName NOT LIKE '疟疾（未分型）'
+            AND p.career NOT LIKE '不详'
+            <if test="'default'!=_parameter and ''!=_parameter">
+                AND p.address LIKE '%${_parameter}%'
+            </if>
+        </where>
+        GROUP BY p.career,pci.`year`,pci.diseaseName
+        ORDER BY p.`year`,pci.diseaseName,p.career
+    </select>
+
+    <resultMap id="analyzeByAgeGroupMap" type="com.malaria.ssm.module.analyzeDisease.pojo.AgeGroupAnalyzeRe">
+        <result column="year" property="year"/>
+        <result column="disease" property="disease"/>
+        <result column="ageGroup" property="ageGroup"/>
+        <result column="patientNum" property="patientNum"/>
+    </resultMap>
+
+    <select id="analyzeByAgeGroup" parameterType="String"
+            resultMap="analyzeByAgeGroupMap">
+        SELECT p.`year` AS `year`,pci.diseaseName AS disease,
+        CASE
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 0 and 9 THEN '0-9'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 10 and 19 THEN '10-19'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 20 and 29 THEN '20-29'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 30 and 39 THEN '30-39'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 40 and 49 THEN '40-49'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 50 and 59 THEN '50-59'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 60 and 69 THEN '60-69'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 70 and 79 THEN '70-79'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 80 and 89 THEN '80-89'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 90 and 99 THEN '90-99'
+        ELSE '>99'
+        END AS ageGroup
+        ,COUNT(p.cardID) AS patientNum
+        FROM patient_information p JOIN patient_cases_information pci
+        ON pci.`year` = p.`year` AND pci.cardID = p.cardID
+        <where>
+            AND pci.diseaseName NOT LIKE '疟疾（未分型）'
+            <if test="'default'!=_parameter and ''!=_parameter">
+                AND p.address LIKE '%${_parameter}%'
+            </if>
+        </where>
+        GROUP BY
+        CASE
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 0 and 9 THEN '0-9'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 10 and 19 THEN '10-19'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 20 and 29 THEN '20-29'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 30 and 39 THEN '30-39'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 40 and 49 THEN '40-49'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 50 and 59 THEN '50-59'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 60 and 69 THEN '60-69'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 70 and 79 THEN '70-79'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 80 and 89 THEN '80-89'
+        WHEN p.`year`-YEAR(p.birthday)+1 BETWEEN 90 and 99 THEN '90-99'
+        ELSE '>99'
+        END,p.`year`,pci.diseaseName
+        ORDER BY p.`year`,pci.diseaseName,ageGroup;
+    </select>
+
+    <!--12.5-->
+    <!--SELECT pi.sex AS sex,COUNT(pi.sex) AS patientNum-->
+    <!--FROM patient_information pi ,patient_cases_information pci-->
+    <!--<where>-->
+    <!--AND pi.cardID = pci.cardID-->
+    <!--AND pi.`year` = pci.`year`-->
+    <!--<if test="0!=beginYear and 0!=endYear">-->
+    <!--AND (pi.`year` BETWEEN #{beginYear} AND #{endYear})-->
+    <!--</if>-->
+    <!--<if test="province != null and province != ''">-->
+    <!--AND ( pi.address LIKE '${province}%')-->
+    <!--</if>-->
+    <!--<if test="null!=diseaseName and ''!=diseaseName">-->
+    <!--AND pci.diseaseName LIKE '${diseaseName}'-->
+    <!--</if>-->
+    <!--</where>-->
+    <!--GROUP BY sex;-->
+
+    <!--SELECT pi.career AS careerCategory,COUNT(pi.career) AS patientNum-->
+    <!--FROM patient_information pi,patient_cases_information pci-->
+    <!--<where>-->
+    <!--AND pi.`year` = pci.`year` AND pi.cardID = pci.cardID-->
+    <!--AND pi.career NOT IN ('不详','')-->
+    <!--<if test="null!=province and ''!=province">-->
+    <!--AND pi.address LIKE '%${province}%'-->
+    <!--</if>-->
+    <!--<if test="0!=beginYear and 0!=endYear">-->
+    <!--AND pi.`year` BETWEEN #{beginYear} AND #{endYear}-->
+    <!--</if>-->
+    <!--<if test="null!=diseaseName and ''!=diseaseName ">-->
+    <!--AND pci.diseaseName LIKE '${diseaseName}'-->
+    <!--</if>-->
+    <!--</where>-->
+    <!--GROUP BY pi.career,pci.diseaseName-->
+</mapper>
+
